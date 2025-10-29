@@ -85,6 +85,10 @@ def collect_messages(payload):
                         file.write(f"{order_num}, {word}\n")
                     # Supposed to delete message(make sure it is doing so)
                     del_response = sqs.delete_message(QueueUrl=payload["sqs_url"], ReceiptHandle=receipt_handle)
+                    if del_response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                        print(f"Successfully deleted message {order_num}")
+                    else:
+                        print(f"Failed to delete message {order_num}")
                 else:
                     print("No messages in response, waiting...")
                     time.sleep(15)
@@ -106,10 +110,6 @@ def collect_messages(payload):
     #Returning word dict to be passed to next task
     print("All messages collected")
     return word_dict 
-
-
-
-
 
 @task(log_prints=True)
 # sorts collected messages into comprehensive phrase
